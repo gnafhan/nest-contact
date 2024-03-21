@@ -1,10 +1,19 @@
 import { PrismaService } from '../src/common/prisma.service';
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class TestService {
   constructor(private prismaService: PrismaService) {}
+
+  async getUser(): Promise<User> {
+    return this.prismaService.user.findUnique({
+      where: {
+        username: 'test',
+      },
+    });
+  }
 
   async deleteUser() {
     await this.prismaService.user.deleteMany({

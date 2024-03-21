@@ -180,6 +180,9 @@ describe('User Controller', () => {
         .expect(200);
       logger.info(response.body);
       expect(response.body.data).toBe(true);
+
+      const user = await testService.getUser();
+      expect(user.token).toBeNull();
     });
   });
 });
