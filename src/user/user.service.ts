@@ -2,6 +2,7 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import {
   LoginUserRequest,
   RegisterUserRequest,
+  UpdateUserRequest,
   UserResponse,
 } from '../model/user.model';
 import { ValidationService } from '../common/validation.service';
@@ -9,7 +10,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { PrismaService } from '../common/prisma.service';
 import { UserValidation } from './user.validation';
-import * as bcrpyt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '@prisma/client';
 
@@ -22,7 +23,7 @@ export class UserService {
   ) {}
 
   async login(request: LoginUserRequest): Promise<UserResponse> {
-    this.logger.info(`UserService.login(${JSON.stringify(request)})`);
+    this.logger.debug(`UserService.login(${JSON.stringify(request)})`);
     const loginRequest = this.validationService.validate(
       UserValidation.LOGIN,
       request,
@@ -38,7 +39,7 @@ export class UserService {
       throw new HttpException('Invalid username or password', 401);
     }
 
-    const isPasswordValid = await bcrpyt.compare(
+    const isPasswordValid = await bcrypt.compare(
       loginRequest.password,
       user.password,
     );
@@ -62,7 +63,7 @@ export class UserService {
   }
 
   async register(request: RegisterUserRequest): Promise<UserResponse> {
-    this.logger.info(`Registering user ${JSON.stringify(request)}`);
+    this.logger.debug(`Registering user ${JSON.stringify(request)}`);
     const registerRequest = this.validationService.validate(
       UserValidation.REGISTER,
       request,
@@ -77,7 +78,7 @@ export class UserService {
       throw new HttpException('Username already exists', 400);
     }
 
-    registerRequest.password = await bcrpyt.hash(registerRequest.password, 10);
+    registerRequest.password = await bcrypt.hash(registerRequest.password, 10);
 
     const user = await this.prismaService.user.create({
       data: registerRequest,
@@ -92,6 +93,34 @@ export class UserService {
     return {
       username: user.username,
       name: user.name,
+    };
+  }
+
+  async update(user: User, request: UpdateUserRequest): Promise<UserResponse> {
+    this.logger.debug(
+      `UserService.update(${user.username}, ${JSON.stringify(request)})`,
+    );
+    const updateRequest = this.validationService.validate(
+      UserValidation.UPDATE,
+      request,
+    );
+
+    if (updateRequest.name) {
+      user.name = updateRequest.name;
+    }
+
+    if (updateRequest.password) {
+      user.password = await bcrypt.hash(updateRequest.password, 10);
+    }
+
+    const result = await this.prismaService.user.update({
+      where: { username: user.username },
+      data: user,
+    });
+
+    return {
+      username: result.username,
+      name: result.name,
     };
   }
 }
