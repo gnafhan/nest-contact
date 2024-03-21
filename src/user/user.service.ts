@@ -11,6 +11,7 @@ import { PrismaService } from '../common/prisma.service';
 import { UserValidation } from './user.validation';
 import * as bcrpyt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -81,6 +82,13 @@ export class UserService {
     const user = await this.prismaService.user.create({
       data: registerRequest,
     });
+    return {
+      username: user.username,
+      name: user.name,
+    };
+  }
+
+  async get(user: User): Promise<UserResponse> {
     return {
       username: user.username,
       name: user.name,

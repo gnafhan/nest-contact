@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { TestService } from './test.service';
@@ -83,6 +83,32 @@ describe('User Controller', () => {
       expect(response.body.data.username).toBe('test');
       expect(response.body.data.name).toBe('test');
       expect(response.body.data.token).toBeDefined();
+    });
+  });
+
+  describe('POST /api/users/current', () => {
+    beforeEach(async () => {
+      await testService.deleteUser();
+      await testService.createUser();
+    });
+
+    it('should be rejected if token is invalid ', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/users/current')
+        .set('Authorization', 'wrong')
+        .expect(401);
+      logger.info(response.body);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to get user', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/users/current')
+        .set('Authorization', 'test')
+        .expect(200);
+      logger.info(response.body);
+      expect(response.body.data.username).toBe('test');
+      expect(response.body.data.name).toBe('test');
     });
   });
 });
