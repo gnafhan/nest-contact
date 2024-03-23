@@ -66,4 +66,38 @@ describe('User Controller', () => {
       expect(response.body.data.phone).toBe('0812345678');
     });
   });
+
+  describe('GET /api/contacts/:contactId', () => {
+    beforeEach(async () => {
+      await testService.deleteContact();
+      await testService.deleteUser();
+
+      await testService.createUser();
+      await testService.createContact();
+    });
+
+    it('should be rejected if contact is not found', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .get(`/api/contacts/${contact.id + 1}`)
+        .set('Authorization', 'test')
+        .expect(404);
+      logger.info(response.body);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to get contact', async () => {
+      const contact = await testService.getContact();
+      const response = await request(app.getHttpServer())
+        .get(`/api/contacts/${contact.id}`)
+        .set('Authorization', 'test')
+        .expect(200);
+      logger.info(response.body);
+      expect(response.body.data.id).toBeDefined();
+      expect(response.body.data.first_name).toBe('test');
+      expect(response.body.data.last_name).toBe('test');
+      expect(response.body.data.email).toBe('test@gmail.com');
+      expect(response.body.data.phone).toBe('0812345678');
+    });
+  });
 });
