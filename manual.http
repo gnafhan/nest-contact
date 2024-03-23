@@ -1,0 +1,124 @@
+### register
+POST http://localhost:3000/api/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "nafhan",
+  "name": "Ghifari Nafhan",
+  "password": "rahasia"
+}
+
+### Login
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "nafhan",
+  "password": "12345"
+}
+
+### Get User
+GET http://localhost:3000/api/users/current
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+### Logout
+DELETE http://localhost:3000/api/users/current
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+### Update User
+PATCH http://localhost:3000/api/users/current
+Content-Type: application/json
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+{
+  "password": "12345"
+}
+
+### Create Contact
+POST http://localhost:3000/api/contacts
+Content-Type: application/json
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+{
+  "first_name": "indomie",
+  "last_name": "santoso",
+  "phone": "08123456789",
+  "email": "budi@mail.com"
+}
+
+### Update Contact
+PUT  http://localhost:3000/api/contacts/504
+Content-Type: application/json
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+{
+  "first_name": "udin",
+  "last_name": "santoso",
+  "phone": "08123456789",
+  "email": "budi@mail.com"
+}
+
+### Get Contact
+GET http://localhost:3000/api/contacts/504
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+### Delete Contacts
+DELETE http://localhost:3000/api/contacts/504
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+### Search Contacts
+GET http://localhost:3000/api/contacts
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+### Create Address
+POST http://localhost:3000/api/contacts/510/addresses
+Content-Type: application/json
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+{
+  "street": "Jl. Kebon Jeruk No. 1",
+  "city": "Jakarta",
+  "province": "DKI Jakarta",
+  "country": "Indonesia",
+  "postal_code": "12345"
+}
+
+### Get Address
+GET http://localhost:3000/api/contacts/510/addresses/178
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+### List Address
+GET http://localhost:3000/api/contacts/510/addresses
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+### Update Address
+PUT http://localhost:3000/api/contacts/510/addresses/178
+Content-Type: application/json
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
+
+{
+  "street": "Jl. Kebon Jeruk assa No. 1",
+  "city": "Jakarta",
+  "province": "DKI Jakarta",
+  "country": "Indonesia",
+  "postal_code": "54321"
+}
+
+### Delete Address
+DELETE http://localhost:3000/api/contacts/510/addresses/178
+Accept: application/json
+Authorization: 2178fbd2-6ba6-491d-9c55-2497367ff107
