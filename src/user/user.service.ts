@@ -11,8 +11,8 @@ import { Logger } from 'winston';
 import { PrismaService } from '../common/prisma.service';
 import { UserValidation } from './user.validation';
 import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
 import { User } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -24,19 +24,19 @@ export class UserService {
 
   async login(request: LoginUserRequest): Promise<UserResponse> {
     this.logger.debug(`UserService.login(${JSON.stringify(request)})`);
-    const loginRequest = this.validationService.validate(
+    const loginRequest: LoginUserRequest = this.validationService.validate(
       UserValidation.LOGIN,
       request,
     );
 
-    const user = await this.prismaService.user.findFirst({
+    let user = await this.prismaService.user.findUnique({
       where: {
         username: loginRequest.username,
       },
     });
 
     if (!user) {
-      throw new HttpException('Invalid username or password', 401);
+      throw new HttpException('Username or password is invalid', 401);
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -45,11 +45,13 @@ export class UserService {
     );
 
     if (!isPasswordValid) {
-      throw new HttpException('Invalid username or password', 401);
+      throw new HttpException('Username or password is invalid', 401);
     }
 
-    await this.prismaService.user.update({
-      where: { username: user.username },
+    user = await this.prismaService.user.update({
+      where: {
+        username: loginRequest.username,
+      },
       data: {
         token: uuidv4(),
       },
